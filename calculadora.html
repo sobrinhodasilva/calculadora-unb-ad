@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>Calculadora REST</title>
+	
+	<link href="jquery-ui/css/dot-luv/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+	<script src="jquery-ui/js/jquery-1.10.2.js"></script>
+	<script src="jquery-ui/js/jquery-ui-1.10.4.custom.js"></script>
+	<script>
+	//http://victorfontes.com/2010/07/consumindo-webservices-rest-com-jquery/
+		$( document).ready(function() {
+			$( "#radioset" ).buttonset();
+			$( ".button" ).button();
+			//Global Url Servico REST
+			
+			
+			//BOtao calcular
+			$('#calcula').click(function(){
+				
+				url= "http://127.0.0.1:8080/" 
+				var operacao = $('input[name=operacao]:checked').val();
+				var x = $('input[name=x]').val();
+				var y = $('input[name=y]').val();
+				if (operacao == 'formula'){
+					url +="calc/"+operacao+"/"+x
+				}
+				else { 
+					url += "calc/"+operacao+"/"+x+"/"+y;
+				}
+				
+				$.getJSON(url, function(data) {
+					//console.log(data.resultado);
+					$('#resultado').text(data.resultado);
+				});
+				
+				
+						
+			});
+			
+			//Salavar
+			$('#salva').click(function(){
+				url= "http://127.0.0.1:8080/arquivo/" 
+				var operacao = $('input[name=operacao]:checked').val();
+				x = $('input[name=x]').val();
+				y = $('input[name=y]').val()
+				if (operacao == 'soma'){
+					url += x +'+'+ y
+				}
+				else if(operacao == 'subtrai') {
+					url += x +'-'+ y
+				}
+				else if(operacao == 'multiplica') {
+					url += x +'*'+ y
+				}
+				else if(operacao == 'dividi') {
+					url += x +'/'+ y
+				}
+				else { 
+					url +=$('input[name=x]').val()
+				}
+				url += '/'+$('#resultado').text()
+				console.log(url);
+				$.post( url, function( data ) {
+					  //$( "#resultado" ).html( data );
+					  alert("Formula Salva!");
+					});
+			});
+			
+			//Exibir Arquivo
+			$('#arquivo').click(function(){
+				
+				$.ajax({
+					  type: "GET",
+					  url: "calc.txt",
+					  dataType: "text",
+					  success:function(texto){
+						  $('#printArquivo').empty().text(texto);
+					  }
+					});
+			});
+		});
+	</script>
+	<style>
+		body{
+			text-align:center;
+		}
+		#resultado{
+			text-size:14px;
+			width:70%;
+			height:95%;
+		}
+		input{
+			text-align:right;
+		}
+	</style>
+<body>
+	<h1 class="">Calculadora REST</h1>
+<table style="margin:auto;">
+	<tr>
+		<td> 
+			 <input type="text" name="x" class="ui-spinner ui-widget ui-widget-content ui-corner-all">
+		</td>
+		<td>
+			<div id="radioset">
+			<label for="soma">+</label>
+				<input type="radio" name="operacao" value="soma" id="soma"/> 
+			<label for="subtrai">-</label>
+				<input type="radio" name="operacao" value="subtrai" id="subtrai"/> 
+			<label for="multiplica">*</label>
+				<input type="radio" name="operacao" value="multiplica" id="multiplica"/> 
+			<label for="dividi">/</label>
+				<input type="radio" name="operacao" value="dividi" id="dividi"/> 
+			<label for="formula">Formula</label>
+				<input type="radio" name="operacao" value="formula" id="formula"/> 
+			</div>
+		</td>
+		
+	</tr>
+	<tr>
+	<td>
+			<input type="text" name="y" class="ui-spinner ui-widget ui-widget-content ui-corner-all"/>
+		</td>
+		<td>
+			<button id="calcula" class="button">Calcular</button>
+			<button id="salva" class="button">Salvar</button>
+		</td>
+		
+	</tr>
+	<tr>
+		<td>
+			
+				<div  id="resultado" class="ui-spinner ui-widget ui-widget-content ui-corner-all"></div> 
+		</td>
+	</tr>
+	<tr>
+	<td></td><td></td>
+	<td><button id="arquivo" class="button">Exibir Arquivo</button></td>
+	</tr>
+</table>
+<div id="printArquivo"></div>
+
+		
+
+
+</form>
+</body>
+</html>
